@@ -3,8 +3,8 @@
 <div class="jumbotron">
   <div class="tk-jumbotron">
     <img src="/img/logo-large.png" class="align-middle tk-logo" alt="">
-    <p class="lead">A platform for writing fast networking code with Rust.</p>
-    <a href="{{ ref . "docs/getting-started/hello-world.md" }}" class="btn call-to-action" role="button" aria-pressed="true">Get Started</a>
+    <p class="lead">用 Rust 编写快速网络程序的平台。</p>
+    <a href="{{ ref . "docs/getting-started/hello-world.md" }}" class="btn call-to-action" role="button" aria-pressed="true">入门</a>
   </div>
 </div>
 
@@ -14,35 +14,35 @@
       <div class="tk-features">
         <h2>
           <i class="fa fa-rocket" aria-hidden="true"></i>
-          Fast
+          快速
         </h2>
-        <p>Tokio's zero-cost abstractions give you bare-metal performance.</p>
+        <p>Tokio 的零成本抽象为你提供裸机的性能。</p>
 
         <h2>
           <i class="fa fa-cogs" aria-hidden="true"></i>
-          Productive
+          生产力
         </h2>
-        <p>Tokio makes it easy to implement protocols and program asynchronously.</p>
+        <p>Tokio 可以轻松实现异步协议与异步程序。</p>
 
         <h2>
           <i class="fa fa-bug" aria-hidden="true"></i>
-          Reliable
+          可靠
         </h2>
-        <p>Tokio leverages Rust's ownership and concurrency model to ensure
-        thread safety.</p>
+        <p>Tokio 利用 Rust 的所有权与并发模型来确保<!--
+        -->线程安全。</p>
 
         <h2>
           <i class="fa fa-dashboard" aria-hidden="true"></i>
-          Scalable
+          可伸缩
         </h2>
-        <p>Tokio has a minimal footprint, and handles backpressure and
-        cancellation naturally.</p>
+        <p>Tokio 具有极小资源占用，并且自然处理背压与<!--
+        -->撤销。</p>
       </div>
     </div>
     <div class="col-md-7">
       <div class="tk-content">
         <pre>
-<code>// A tiny async echo server with Tokio
+<code>// 以 Tokio 实现的微型异步回显服务器
 extern crate tokio;
 
 use tokio::io;
@@ -50,27 +50,27 @@ use tokio::net::TcpListener;
 use tokio::prelude::*;
 
 fn main() {
-    // Bind the server's socket
+    // 绑定服务器的套接字
     let addr = "127.0.0.1:12345".parse().unwrap();
     let tcp = TcpListener::bind(&addr).unwrap();
 
-    // Iterate incoming connections
+    // 迭代接入的连接
     let server = tcp.incoming().for_each(|tcp| {
-        // Split up the read and write halves
+        // 拆分读写两部分
         let (reader, writer) = tcp.split();
 
-        // Copy the data back to the client
+        // 将数据复制回客户端
         let conn = io::copy(reader, writer)
-            // print what happened
+            // 输出所发生的事情
             .map(|(n, _, _)| {
                 println!("wrote {} bytes", n)
             })
-            // Handle any errors
+            // 处理任何错误
             .map_err(|err| {
                 println!("IO error {:?}", err)
             });
 
-        // Spawn the future as a concurrent task
+        // 产生 future 作为并发任务
         tokio::spawn(conn);
 
         Ok(())
@@ -79,7 +79,7 @@ fn main() {
         println!("server error {:?}", err);
     });
 
-    // Start the runtime and spin up the server
+    // 启动运行时并启动服务器
     tokio::run(server);
 }
 </code>
