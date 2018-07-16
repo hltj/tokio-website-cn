@@ -1,6 +1,6 @@
-# Tokio's Website
+# Tokio 中文站
 
-The website for the Tokio project. Lives at [https://tokio.rs](https://tokio.rs).
+Tokio 项目官方网站的中文翻译：[https://tokio-cn.github.io](https://tokio-cn.github.io)。
 
 [![Build Status](https://travis-ci.org/tokio-rs/website.svg?branch=master)](https://travis-ci.org/tokio-rs/website)
 

@@ -1,8 +1,8 @@
-baseurl = "https://tokio.rs"
+baseurl = "https://tokio-cn.github.io"
 title = "Tokio"
-languageCode = "en-us"
+languageCode = "zh-cn"
 canonifyURLs = "true"
-googleAnalytics = "UA-90234741-1"
+googleAnalytics = "UA-122396021-1"
 
 [params]
 tokioDocsURL = "https://docs.rs/tokio/0.1/tokio"
