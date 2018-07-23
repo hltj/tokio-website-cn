@@ -5,27 +5,27 @@ menu = "getting_started"
 weight = 110
 +++
 
-To kick off our tour of Tokio, we will start with the obligatory "hello world"
-example. This server will listen for incoming connections. Once a connection is
-received, it will write "hello world" to the client and close the connection.
+为了开始我们的 Tokio 之旅，我们会以惯例“hello world”开始<!--
+-->。这个服务器会监听接入的连接。收到连接<!--
+-->后，它会向客户端写入“hello world”并关闭连接。
 
-Let's get started.
+让我们开始吧。
 
-First, generate a new crate.
+首先，生成一个新的 crate。
 
 ```shell
 $ cargo new --bin hello-world
 $ cd hello-world
 ```
 
-Next, add the necessary dependencies:
+接下来，添加必要的依赖项：
 
 ```toml
 [dependencies]
 tokio = "0.1"
 ```
 
-and the crates and types into scope in `main.rs`:
+还有 `main.rs` 中的 crate 与类型：
 
 ```rust
 # #![deny(deprecated)]
@@ -37,10 +37,10 @@ use tokio::prelude::*;
 # fn main() {}
 ```
 
-## [Writing the server](#writing) {#writing}
+## [编写服务器](#writing) {#writing}
 
-The first step is to bind a `TcpListener` to a local port. We use the
-`TcpListener` implementation provided by Tokio.
+第一步是将 `TcpListener` 绑定到本地端口。我们使用
+Tokio 提供的 `TcpListener` 实现。
 
 ```rust
 # #![deny(deprecated)]
@@ -53,12 +53,12 @@ fn main() {
     let addr = "127.0.0.1:6142".parse().unwrap();
     let listener = TcpListener::bind(&addr).unwrap();
 
-    // Following snippets come here...
+    // 后续片段写到这里……
 }
 ```
 
-Next, we define the server task. This asynchronous task will listen for incoming
-connections on the bound listener and process each accepted connection.
+接下来，我们定义服务器任务。这个异步任务会监听<!--
+-->在已绑定的监听器上接入的连接，并处理每个已接受连接。
 
 ```rust
 # #![deny(deprecated)]
@@ -73,44 +73,44 @@ connections on the bound listener and process each accepted connection.
 let server = listener.incoming().for_each(|socket| {
     println!("accepted socket; addr={:?}", socket.peer_addr().unwrap());
 
-    // Process socket here.
+    // 这里处理套接字。
 
     Ok(())
 })
 .map_err(|err| {
-    // All tasks must have an `Error` type of `()`. This forces error
-    // handling and helps avoid silencing failures.
+    // 所有任务必须具有 `()` 类型的 `Error`。这会强制进行
+    // 错误处理，并且有助于避免静默故障。
     //
-    // In our example, we are only going to log the error to STDOUT.
+    // 在本例中，只是将错误记录到 STDOUT（标准输出）。
     println!("accept error = {:?}", err);
 });
 # }
 ```
 
-Combinator functions are used to define asynchronous tasks. The call to
-`listener.incoming()` returns a [`Stream`] of accepted connections. A [`Stream`]
-is kind of like an asynchronous iterator.
+这些组合子函数用于定义异步任务。对
+`listener.incoming()` 的调用返回一个已接受连接的 [`Stream`]。[`Stream`]
+有点像异步迭代器。
 
-Each combinator function takes ownership of necessary state as well as the
-callback to perform and returns a new `Future` or `Stream` that has the
-additional "step" sequenced.
+每个组合子函数都获得必要状态的所有权以及用<!--
+-->以执行的回调，并返回一个新的 `Future` 或者是有附加“步骤”顺次排入的 `Stream`<!--
+-->。
 
-Returned futures and streams are lazy, i.e., no work is performed when calling
-the combinator. Instead, once all the asynchronous steps are sequenced, the
-final `Future` (representing the task) is spawned on an executor. This is when
-the work that was previously defined starts getting run.
+返回的那些 future 与 stream 都是惰性的，也就是说，在调用该组合子时不执行任何操作<!--
+-->。相反，一旦所有异步步骤都已顺次排入，
+最终的 `Future`（代表该任务）就会在执行子上产生。这是<!--
+-->之前定义的工作开始运行的时候。
 
-We will be digging into futures and streams later on.
+我们稍后会深入探讨这些 future 与 stream。
 
-## [Spawning the task](#spawning) {#spawning}
+## [产生任务](#spawning) {#spawning}
 
-Executors are responsible for scheduling asynchronous tasks, driving them to
-completion. There are a number of executor implementations to choose from, each have
-different pros and cons. In this example, we will use the [Tokio runtime][rt].
+执行子负责调度异步任务，使其<!--
+-->完成。有很多执行子的实现可供选择，每个都有<!--
+-->不同的优缺点。在本例中，我们会使用 [Tokio 运行时][rt]。
 
-The Tokio runtime is a pre-configured runtime for asynchronous applications. It
-includes a thread pool as the default executor. This thread pool is tuned for
-usage in asynchronous applications.
+Tokio 运行时是为异步应用程序预配置的运行时。它<!--
+-->包含一个线程池作为默认执行子。该线程池已经为<!--
+-->在异步应用程序中使用而调整好。
 
 ```rust
 # #![deny(deprecated)]
@@ -129,23 +129,23 @@ tokio::run(server);
 # }
 ```
 
-`tokio::run` starts the runtime, blocking the current thread until
-all spawned tasks have completed and all resources (like TCP sockets) have been
-dropped. Spawning a task using [`tokio::spawn`] **must** happen from within the
-context of a [runtime][rt].
+`tokio::run` 会启动该运行时，阻塞当前进程直到<!--
+-->所有已产生的任务都已完成并且所有资源（如 TCP 套接字）都已<!--
+-->释放。使用 [`tokio::spawn`] 产生的任务**必须**来自<!--
+-->[运行时][rt]的上下文。
 
-So far, we only have a single task running on the executor, so the `server` task
-is the only one blocking `run` from returning.
+至此，我们仅仅在执行子上执行了单个任务，因此 `server` 任务<!--
+-->是阻塞 `run` 返回的唯一任务。
 
-Next, we will process the inbound sockets.
+接下来，我们会处理入站套接字。
 
-## [Writing Data](#writing-data) {#writing-data}
+## [写数据](#writing-data) {#writing-data}
 
-Our goal is to write `"hello world\n"` on each accepted socket. We will do this
-by defining a new asynchronous task to do the write and spawning that task on
-the same `current_thread` executor.
+我们的目标是对每个已接受的套接字写入 `"hello world\n"`。我们会这样做：<!--
+-->通过定义一个新的异步任务来执行写操作，并在<!--
+-->同一 `current_thread` 执行子上产生该任务。
 
-Going back to the `incoming().for_each` block.
+回到 `incoming().for_each` 块。
 
 ```rust
 # #![deny(deprecated)]
@@ -166,7 +166,7 @@ let server = listener.incoming().for_each(|socket| {
             Ok(())
         });
 
-    // Spawn a new task that processes the socket:
+    // 产生一个处理该套接字的新任务：
     tokio::spawn(connection);
 
     Ok(())
@@ -175,30 +175,30 @@ let server = listener.incoming().for_each(|socket| {
 # }
 ```
 
-We are defining another asynchronous task. This task will take ownership of the
-socket, write the message on that socket, then complete. The `connection`
-variable holds the final task. Again, no work has yet been performed.
+我们正在定义另一个异步任务。这个任务会取得该套接字的所有权<!--
+-->、对该套接字写入信息，然后完成。`connection`
+变量保存了其最终任务。同样，此时还没有完成任何工作。
 
-`tokio::spawn` is used to spawn the task on the runtime. Because the
-`server` future is running on the runtime, we are able to spawn further tasks.
-`tokio::spawn` will panic if called from outside of the runtime.
+`tokio::spawn` 用于在运行时产生任务。因为
+`server` future 会在运行时上运行，所以我们可以产生更多任务。
+如果在运行时外部调用 `tokio::spawn`，它会恐慌（panic）。
 
-The [`io::write_all`] function takes ownership of `socket`, returning a
-[`Future`] that completes once the entire message has been written to the
-socket. `then` is used to sequence a step that gets run once the write has
-completed. In our example, we just write a message to `STDOUT` indicating that
-the write has completed.
+[`io::write_all`] 函数获取 `socket` 的所有权并返回一个
+[`Future`]，一旦整个消息都已写入到该套接字中，这个 future 就会完成<!--
+-->。`then` 用于排入当写操作完成后运行的步骤<!--
+-->。在本例中，我们只向 `STDOUT` 写一条消息，表明<!--
+-->写操作已完成。
 
-Note that `res` is a `Result` that contains the original socket. This allows us
-to sequence additional reads or writes on the same socket. However, we have
-nothing more to do, so we just drop the socket, which closes it.
+请注意 `res` 是一个包含原始套接字的 `Result`。这让我们可以<!--
+-->在同一个套接字上顺次排入附加的读取或写入。然而，我们并<!--
+-->没有任何事情可做，所有我们只是释放该套接字，即可关闭该套接字。
 
-You can find the full example [here][full-code]
+可以在[这里][full-code]找到完整的示例
 
-## [Next steps](#next-steps) {#next-steps}
+## [下一步](#next-steps) {#next-steps}
 
-We've only dipped our toes in Tokio and its asynchronous model. The next page in
-the guide, will start digging deeper into the Tokio runtime model.
+我们这里只是对 Tokio 及其异步模型小试牛刀。本指南的下一页<!--
+-->会开始深入探讨 Tokio 运行时模型。
 
 [`Future`]: {{< api-url "futures" >}}/future/trait.Future.html
 [`Stream`]: {{< api-url "futures" >}}/stream/trait.Stream.html
