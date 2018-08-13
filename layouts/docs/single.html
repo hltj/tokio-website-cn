@@ -66,7 +66,7 @@
         {{ .Content }}
         <!-- Yes, we have to use *Prev* to get the next content, because the
         weights are sorted inversely to how they are actually displayed... -->
-        {{ with .PrevInSection }}<div class="tk-next"><b>Next up</b>: <a href = {{ .URL }}>{{ end }}
+        {{ with .PrevInSection }}<div class="tk-next"><b>下一篇</b>：<a href = {{ .URL }}>{{ end }}
         {{ with .PrevInSection }} {{ .Title }}</a></div>{{ end }}
       </div>
     </div>
