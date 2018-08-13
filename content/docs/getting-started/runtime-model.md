@@ -1,83 +1,83 @@
 +++
-title = "Runtime Model"
+title = "运行时模型"
 description = ""
 menu = "getting_started"
 weight = 120
 +++
 
-Now we will go over the Tokio / futures runtime model. Tokio is built on top of
-the [`futures`] crate and uses its runtime model. This allows it to interop
-with other libraries also using the [`futures`] crate.
+现在我们要介绍 Tokio / future 运行时模型。Tokio 建立在
+[`futures`] crate 之上并使用其运行时模型。这让 Tokio 可以<!--
+-->与其他也使用 [`futures`] crate 的库进行互操作。
 
-**Note**: This runtime model is very different than async libraries found in
-other languages. While, at a high level, APIs can look similar, the way code
-gets executed differs.
+**注**：这个运行时模型与其他语言中的异步库非常不同<!--
+-->。虽然在高级别的 API 上看起来很相似，但是代码执行的方式<!--
+-->却并不相同。
 
-## [Synchronous Model](#synchronous) {#synchronous}
+## [同步模型](#synchronous) {#synchronous}
 
-First, let's talk briefly about the synchronous (or blocking) model. This is the
-model that the Rust [standard library] uses.
+首先，我们来简要谈谈同步（或阻塞）模型。这是
+Rust [标准库]使用的模型。
 
 ```rust
 # use std::io::prelude::*;
 # use std::net::TcpStream;
 # fn dox(mut socket: TcpStream) {
-// let socket = ...;
+// let socket = ……;
 let mut buf = [0; 1024];
 let n = socket.read(&mut buf).unwrap();
 
-// Do something with &buf[..n];
+// 使用 &buf[..n];
 # }
 ```
 
-When `socket.read` is called, either the socket has pending data in its receive
-buffer or it does not. If there is pending data, then the call to `read` will
-return immediately and `buf` will be filled with that data. However, if there is
-no pending data, then the `read` function will block the current thread until
-data is received. At which time, `buf` will be filled with this newly received
-data and the `read` function will return.
+当调用 `socket.read` 时，要么该套接字在其接收缓冲区有待读取的数据，
+要么没有。如果有待读取的数据，那么对 `read` 的调用会<!--
+-->立即返回并且以相应数据填充 `buf`。而如果<!--
+-->没有待读取的数据，那么 `read` 函数会阻塞当前线程直到<!--
+-->收到数据。这时，会以这次新接收到的数据填充 `buf`
+并且 `read` 函数会返回。
 
-In order to perform reads on many different sockets concurrently, a thread per
-socket is required. Using a thread per socket does not scale up very well to
-large numbers of sockets. This is known as the [c10k] problem.
+为了对多个不同的套接字并发执行读取操作，需要每个套接字<!--
+-->一个线程。每个套接字使用一个线程不能很好地伸缩到<!--
+-->大量的套接字。这就是所谓的 [c10k] 问题。
 
-## [Non-blocking sockets](#non-blocking) {#non-blocking}
+## [非阻塞套接字](#non-blocking) {#non-blocking}
 
-The way to avoid blocking a thread when performing an operation like read is to
-not block the thread! When the socket has no pending data in its receive buffer,
-the `read` function returns immediately, indicating that the socket was "not
-ready" to perform the read operation.
+在执行像读取这样的操作时避免阻塞线程的方法是<!--
+-->不阻塞线程！当套接字的接收缓冲区中没有待读取的数据时，
+`read` 函数会立即返回，表明该套接字“未<!--
+-->准备好”执行读取操作。
 
-When using a Tokio [`TcpStream`], a call to `read` will return an error of kind
-[`ErrorKind::WouldBlock`] if there is no pending data to read. At this point,
-the caller is responsible for calling `read` again at a later time. The trick is
-to know when that "later time" is.
+当使用 Tokio [`TcpStream`] 时，如果没有待读取数据的话，对 `read` 的调用会立即返回一种
+[`ErrorKind::WouldBlock`] 类型的错误。此时，
+调用方负责稍后再次调用 `read`。其诀窍是<!--
+-->知道什么时候是“稍后”。
 
-Another way to think about a non-blocking read is as "polling" the socket for
-data to read.
+考虑非阻塞读取的另一种方式是“轮询”用于读取数据的<!--
+-->套接字。
 
-## [Polling Model](#polling) {#polling}
+## [轮询模型](#polling) {#polling}
 
-The strategy of polling a socket for data can be generalized to any operation.
-For example, a function to get a "widget" in the polling model would look
-something like this:
+对数据套接字轮询的策略可以泛化为对任何操作轮询。
+例如，在轮询模型中获取“部件（widget）”的函数看起来<!--
+-->类似于：
 
 ```rust,ignore
-fn poll_widget() -> Async<Widget> { ... }
+fn poll_widget() -> Async<Widget> { …… }
 ```
 
-This function returns an `Async<Widget>` where [`Async`] is an enum of
-`Ready(Widget)` or `NotReady`. The [`Async`] enum is provided by the [`futures`]
-crate and is one of the building blocks of the polling model.
+这个函数返回一个 `Async<Widget>`，其中 [`Async`] 是枚举值
+`Ready(Widget)` 或 `NotReady`。[`Async`] 枚举由 [`futures`] crate 提供，
+并且是轮询模型的基本要素之一。
 
-Now, lets define an asynchronous task without combinators that uses this
-`poll_widget` function. The task will do the following:
+现在，我们来定义一个无需使用这个
+`poll_widget` 函数的组合子的异步任务。该任务会执行以下操作：
 
-1. Acquire a widget.
-2. Print the widget to STDOUT.
-3. Terminate the task.
+1. 获取一个部件。
+2. 将该部件输出到标准输出（STDOUT）.
+3. 结束该任务。
 
-To define a task, we implement the [`Future`] trait.
+为了定义一个任务，我们实现了 [`Future`] trait。
 
 ```rust
 # #![deny(deprecated)]
@@ -88,7 +88,7 @@ To define a task, we implement the [`Future`] trait.
 # pub struct Widget;
 # fn poll_widget() -> Async<Widget> { unimplemented!() }
 #
-/// A task that polls a single widget and writes it to STDOUT.
+/// 轮询单个部件并将其写入到标准输出的任务。
 pub struct MyTask;
 
 impl Future for MyTask {
@@ -112,33 +112,33 @@ impl Future for MyTask {
 # }
 ```
 
-> **Important**: Returning `Async::NotReady` has special meaning. See the [next
-> section] for more details.
+> **重要**：返回 `Async::NotReady` 具有特殊含义。关于更详细的信息，请参见<!--
+> -->[下一节]。
 
-The key thing to note is, when `MyTask::poll` is called, it immediately tries to
-get the widget. If the call to `poll_widget` returns `NotReady`, then the task
-is unable to make further progress. The task then returns `NotReady` itself,
-indicating that it is not ready to complete processing.
+需要注意的关键是，当调用 `MyTask::poll` 时，它会立即尝试<!--
+-->获取该部件。如果对 `poll_widget` 的调用返回 `NotReady`，那么该任务<!--
+-->无法取得进一步的进展。然后该任务返回 `NotReady` 本身，
+表明它还没有准备好完成处理。
 
-The task implementation does not block. Instead, "sometime in the future", the
-executor will call `MyTask::poll` again. `poll_widget` will be called again. If
-`poll_widget` is ready to return a widget, then the task, in turn, is ready to
-print the widget. The task can then complete by returning `Ready`.
+该任务的实现并不会阻塞。相反，“在将来的某个时刻”，
+执行子会再次调用 `MyTask::poll`。会再次调用 `poll_widget`。如果
+`poll_widget` 已经准备好返回一个部件，那么该任务就可以输出<!--
+-->该部件了。然后可以通过返回 `Ready` 完成该任务。
 
-## [Executors](#executors) {#executors}
+## [执行子](#executors) {#executors}
 
-In order for the task to make progress, something has to call `MyTask::poll`.
-This is the job of an executor.
+为了使任务取得进展，必须有地方调用 `MyTask::poll`。
+这就是执行子（executor）的职责。
 
-Executors are responsible for repeatedly calling `poll` on a task until `Ready`
-is returned. There are many different ways to do this. For example, the
-[`CurrentThread`] executor will block the current thread and loop through all
-spawned tasks, calling poll on them. [`ThreadPool`] schedules tasks across a thread
-pool. This is also the default executor used by the [runtime][rt].
+执行子负责对任务重复调用 `poll`，直到返回 `Ready`
+。有许多不同的方法可以做到这一点。例如，
+[`CurrentThread`] 执行子会阻塞当前线程并循环遍历所有<!--
+-->已产生的任务，并对它们轮询调用。[`ThreadPool`] 会在线程池上调度任务<!--
+-->。这也是[运行时][rt]所使用的默认执行子。
 
-All tasks **must** be spawned on an executor or no work will be performed.
+所有任务**必须**都在执行子上产生，否则没有任何作用。
 
-At the very simplest, an executor could look something like this:
+在最简单的情况下，执行子可能看起来类似于：
 
 ```rust
 # #![deny(deprecated)]
@@ -171,12 +171,12 @@ impl SpinExecutor {
 # pub fn main() {}
 ```
 
-Of course, this would not be very efficient. The executor spins in a busy loop
-and tries to poll all tasks even if the task will just return `NotReady` again.
+当然，这不会很有效率。执行子在一个繁忙的循环中自旋<!--
+-->并尝试轮询所有任务，即使任务只会再次返回 `NotReady`。
 
-Ideally, there would be some way for the executor to know when the "readiness"
-state of a task is changed, i.e.  when a call to `poll` will return `Ready`.
-Then, the executor would look something like this:
+理想情况下，执行子可以通过某种方式知道任务何时变更为“准备就绪”<!--
+-->状态，即当对 `poll` 的调用会返回 `Ready` 时。
+那么执行子看起来会类似于：
 
 ```rust
 # #![deny(deprecated)]
@@ -207,7 +207,7 @@ Then, the executor would look something like this:
                 return;
             }
 
-            // Put the thread to sleep until there is work to do
+            // 让线程进入休眠状态，直到有事情做
             self.sleep_until_tasks_are_ready();
         }
     }
@@ -215,11 +215,11 @@ Then, the executor would look something like this:
 # pub fn main() {}
 ```
 
-Being able to get notified when a task goes from "not ready" to "ready" is the
-core of the [`futures`] task model. We will be digging more into that shortly.
+当任务从“未准备好”变成“已准备好”时能够得到通知是<!--
+-->[`futures`] 任务模型的核心。我们很快会进一步深入探讨。
 
 [`futures`]: {{< api-url "futures" >}}
-[standard library]: https://doc.rust-lang.org/std/
+[标准库]: https://doc.rust-lang.org/std/
 [c10k]: https://en.wikipedia.org/wiki/C10k_problem
 [`ErrorKind::WouldBlock`]: https://doc.rust-lang.org/std/io/enum.ErrorKind.html#variant.WouldBlock
 [`TcpStream`]: {{< api-url "tokio" >}}/net/struct.TcpStream.html
@@ -228,4 +228,4 @@ core of the [`futures`] task model. We will be digging more into that shortly.
 [`CurrentThread`]: {{< api-url "tokio" >}}/executor/current_thread/index.html
 [`ThreadPool`]: http://docs.rs/tokio-threadpool
 [rt]: {{< api-url "tokio" >}}/runtime/index.html
-[next section]: {{< relref "docs/getting-started/futures.md#returning-not-ready" >}}
+[下一节]: {{< relref "docs/getting-started/futures.md#returning-not-ready" >}}
