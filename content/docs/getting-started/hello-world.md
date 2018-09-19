@@ -1,9 +1,10 @@
-+++
-title = "Hello World!"
-description = ""
-menu = "getting_started"
-weight = 110
-+++
+---
+title: "Hello World!"
+weight : 1010
+menu:
+  docs:
+    parent: getting_started
+---
 
 为了开始我们的 Tokio 之旅，我们会以惯例“hello world”开始<!--
 -->。这个服务器会监听接入的连接。收到连接<!--
@@ -13,7 +14,7 @@ weight = 110
 
 首先，生成一个新的 crate。
 
-```shell
+```bash
 $ cargo new --bin hello-world
 $ cd hello-world
 ```
@@ -37,7 +38,7 @@ use tokio::prelude::*;
 # fn main() {}
 ```
 
-## [编写服务器](#writing) {#writing}
+# 编写服务器
 
 第一步是将 `TcpListener` 绑定到本地端口。我们使用
 Tokio 提供的 `TcpListener` 实现。
@@ -102,7 +103,7 @@ let server = listener.incoming().for_each(|socket| {
 
 我们稍后会深入探讨这些 future 与 stream。
 
-## [产生任务](#spawning) {#spawning}
+# 产生任务
 
 执行子负责调度异步任务，使其<!--
 -->完成。有很多执行子的实现可供选择，每个都有<!--
@@ -139,7 +140,7 @@ tokio::run(server);
 
 接下来，我们会处理入站套接字。
 
-## [写数据](#writing-data) {#writing-data}
+# 写数据
 
 我们的目标是对每个已接受的套接字写入 `"hello world\n"`。我们会这样做：<!--
 -->通过定义一个新的异步任务来执行写操作，并在<!--
@@ -195,7 +196,7 @@ let server = listener.incoming().for_each(|socket| {
 
 可以在[这里][full-code]找到完整的示例
 
-## [下一步](#next-steps) {#next-steps}
+## 下一步
 
 我们这里只是对 Tokio 及其异步模型小试牛刀。本指南的下一页<!--
 -->会开始深入探讨 Tokio 运行时模型。

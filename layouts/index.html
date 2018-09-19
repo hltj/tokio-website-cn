@@ -1,92 +1,138 @@
 {{ partial "header" . }}
 
-<div class="jumbotron">
-  <div class="tk-jumbotron">
-    <img src="/img/logo-large.png" class="align-middle tk-logo" alt="">
-    <p class="lead">用 Rust 编写快速网络程序的平台。</p>
-    <a href="{{ ref . "docs/getting-started/hello-world.md" }}" class="btn call-to-action" role="button" aria-pressed="true">入门</a>
-  </div>
-</div>
-
-<div class="container tk-home">
-  <div class="row">
-    <div class="col-md-5">
-      <div class="tk-features">
-        <h2>
-          <i class="fa fa-rocket" aria-hidden="true"></i>
-          快速
-        </h2>
-        <p>Tokio 的零成本抽象为你提供裸机的性能。</p>
-
-        <h2>
-          <i class="fa fa-cogs" aria-hidden="true"></i>
-          生产力
-        </h2>
-        <p>Tokio 可以轻松实现异步协议与异步程序。</p>
-
-        <h2>
-          <i class="fa fa-bug" aria-hidden="true"></i>
-          可靠
-        </h2>
-        <p>Tokio 利用 Rust 的所有权与并发模型来确保<!--
-        -->线程安全。</p>
-
-        <h2>
-          <i class="fa fa-dashboard" aria-hidden="true"></i>
-          可伸缩
-        </h2>
-        <p>Tokio 具有极小资源占用，并且自然处理背压与<!--
-        -->撤销。</p>
+<main class="tk-masthead">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-5 mx-auto col-md-5 order-md-2">
+        <img class="img-fluid mb-3 mb-md-0 tk-logo" src="/img/Tokio_Mark_Large.png" alt="">
       </div>
-    </div>
-    <div class="col-md-7">
-      <div class="tk-content">
-        <pre>
-<code>// 以 Tokio 实现的微型异步回显服务器
-extern crate tokio;
-
-use tokio::io;
-use tokio::net::TcpListener;
-use tokio::prelude::*;
-
-fn main() {
-    // 绑定服务器的套接字
-    let addr = "127.0.0.1:12345".parse().unwrap();
-    let tcp = TcpListener::bind(&addr).unwrap();
-
-    // 迭代接入的连接
-    let server = tcp.incoming().for_each(|tcp| {
-        // 拆分读写两部分
-        let (reader, writer) = tcp.split();
-
-        // 将数据复制回客户端
-        let conn = io::copy(reader, writer)
-            // 输出所发生的事情
-            .map(|(n, _, _)| {
-                println!("wrote {} bytes", n)
-            })
-            // 处理任何错误
-            .map_err(|err| {
-                println!("IO error {:?}", err)
-            });
-
-        // 产生 future 作为并发任务
-        tokio::spawn(conn);
-
-        Ok(())
-    })
-    .map_err(|err| {
-        println!("server error {:?}", err);
-    });
-
-    // 启动运行时并启动服务器
-    tokio::run(server);
-}
-</code>
-        </pre>
+      <div class="col-md-7 order-md-1 text-center text-md-left pr-md-5">
+        <h1 class="mb-3 tk-text-big">Tokio</h1>
+        <p class="lead">
+          The asynchronous run-time for the Rust programming language.
+        </p>
+        <p class="lead mb-4">
+          Tokio is an open source library providing an asynchronous, event
+          driven platform for building fast, reliable, and lightweight network
+          applications. It leverages Rust's ownership and concurrency model to
+          ensure thread safety.
+        </p>
+        <div class="d-flex flex-column flex-md-row lead mb-3">
+          <a href="{{ ref . "/docs/getting-started/hello-world.md" }}" class="btn btn-lg btn-tk-primary mb-3 mb-md-0 mr-md-3">Get started</a>
+        </div>
       </div>
     </div>
   </div>
+</main>
+
+<div class="masthead-followup row m-0 border border-white">
+  <div class="col-12 col-md-4 p-3 p-md-5 bg-light border border-white">
+    <h3>
+      <i class="fa fa-rocket" aria-hidden="true"></i>
+      Fast
+    </h3>
+
+    <p>
+      Building on top of Rust, Tokio provides blazingly fast performance,
+      making it an ideal for high performance server applications.
+    </p>
+
+    <p>
+      <b>Zero-cost abstractions</b><br>
+      Tokio's run-time model adds no overhead compared to an equivalent system
+      written entirely by hand.
+    </p>
+
+    <p>
+      <b>Concurrency</b><br>
+      Applications built with Tokio are concurrent out of the box. Tokio
+      provides a multithreaded, work-stealing, task scheduler tuned for
+      async networking work loads.
+    </p>
+
+    <p>
+      <b>Non-blocking I/O</b><br>
+      Tokio is backed by the non-blocking, evented, I/O stack provided
+      by the operating system.
+    </p>
+
+    <hr class="half-rule">
+    <a class="btn btn-outline-primary" href="/docs/overview/#fast">Learn more</a>
+  </div>
+
+  <!--  style="text-decoration: line-through" -->
+  <div class="col-12 col-md-4 p-3 p-md-5 bg-light border border-white">
+    <h3>
+      <i class="fa fa-shield" aria-hidden="true"></i>
+      Reliable
+    </h3>
+
+    <p>
+      While Tokio cannot prevent all bugs, it is designed to minimize them.
+      Tokio brings peace of mind when shipping mission critical applications.
+    </p>
+
+    <p>
+      <b>Ownership and type system</b><br>
+      Tokio leverages Rust's type system to provide APIs that are hard to misuse.
+    </p>
+
+    <p>
+      <b>Backpressure</b><br>
+      Backpressure is handled out of the box without having to use any
+      complicated APIs.
+    <p>
+
+    <p>
+      <b>Cancellation</b><br>
+      Rust's ownership model allows Tokio to automatically detect when a
+      computation is no longer needed. Tokio will automatically cancel it
+      without the user having to call a <code>cancel</code> function.
+    </p>
+
+    <hr class="half-rule">
+    <a class="btn btn-outline-primary" href="/docs/overview/#reliable">Learn more</a>
+  </div>
+
+  <div class="col-12 col-md-4 p-3 p-md-5 bg-light border border-white">
+    <h3>
+      <i class="fa fa-dashboard" aria-hidden="true"></i>
+      Lightweight
+    </h3>
+
+    <p>
+      Tokio scales well without adding overhead to the application, allowing it
+      to thrive in resource constrained environments.
+    </p>
+
+    <p>
+      <b>No garbage collector</b><br>
+      Because Tokio uses Rust, no garbage collector or other language run-time
+      is included.
+    <p>
+
+    <p>
+      <b>Modular</b><br>
+      Tokio is built as a collection of small components. The user can pick and
+      choose the parts that work best for the application at hand without paying
+      the cost for features not being used.
+    </p>
+
+    <hr class="half-rule">
+    <a class="btn btn-outline-primary" href="/docs/overview/#lightweight">Learn more</a>
+  </div>
 </div>
+
+<footer class="tk-footer text-muted">
+  <div class="container-fluid p-3 p-md-5">
+    <ul class="tk-footer-links">
+      <li><a href="https://github.com/tokio-rs/tokio">GitHub</a></li>
+      <li><a href="https://twitter.com/tokio_rs">Twitter</a></li>
+      <li><a href="https://github.com/tokio-rs/tokio/tree/master/examples">Examples</a></li>
+      <li><a href="/docs/overview/">About</a></li>
+    </ul>
+    <p>Built with all the love in the world by <a href="https://twitter.com/carllerche" target="_blank" rel="noopener">@carllerche</a> with the help of <a href="https://github.com/tokio-rs/tokio/graphs/contributors">our contributors</a>.</p>
+  </div>
+</footer>
 
 {{ partial "footer" . }}

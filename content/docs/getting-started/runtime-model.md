@@ -1,9 +1,10 @@
-+++
-title = "运行时模型"
-description = ""
-menu = "getting_started"
-weight = 120
-+++
+---
+title: "运行时模型"
+weight : 1020
+menu:
+  docs:
+    parent: getting_started
+---
 
 现在我们要介绍 Tokio / future 运行时模型。Tokio 建立在
 [`futures`] crate 之上并使用其运行时模型。这让 Tokio 可以<!--
@@ -13,7 +14,7 @@ weight = 120
 -->。虽然在高级别的 API 上看起来很相似，但是代码执行的方式<!--
 -->却并不相同。
 
-## [同步模型](#synchronous) {#synchronous}
+## 同步模型
 
 首先，我们来简要谈谈同步（或阻塞）模型。这是
 Rust [标准库]使用的模型。
@@ -41,7 +42,7 @@ let n = socket.read(&mut buf).unwrap();
 -->一个线程。每个套接字使用一个线程不能很好地伸缩到<!--
 -->大量的套接字。这就是所谓的 [c10k] 问题。
 
-## [非阻塞套接字](#non-blocking) {#non-blocking}
+## 非阻塞套接字
 
 在执行像读取这样的操作时避免阻塞线程的方法是<!--
 -->不阻塞线程！当套接字的接收缓冲区中没有待读取的数据时，
@@ -56,7 +57,7 @@ let n = socket.read(&mut buf).unwrap();
 考虑非阻塞读取的另一种方式是“轮询”用于读取数据的<!--
 -->套接字。
 
-## [轮询模型](#polling) {#polling}
+## 轮询模型
 
 对数据套接字轮询的策略可以泛化为对任何操作轮询。
 例如，在轮询模型中获取“部件（widget）”的函数看起来<!--
@@ -125,7 +126,7 @@ impl Future for MyTask {
 `poll_widget` 已经准备好返回一个部件，那么该任务就可以输出<!--
 -->该部件了。然后可以通过返回 `Ready` 完成该任务。
 
-## [执行子](#executors) {#executors}
+## 执行子
 
 为了使任务取得进展，必须有地方调用 `MyTask::poll`。
 这就是执行子（executor）的职责。
@@ -228,4 +229,4 @@ impl SpinExecutor {
 [`CurrentThread`]: {{< api-url "tokio" >}}/executor/current_thread/index.html
 [`ThreadPool`]: http://docs.rs/tokio-threadpool
 [rt]: {{< api-url "tokio" >}}/runtime/index.html
-[下一节]: {{< relref "docs/getting-started/futures.md#returning-not-ready" >}}
+[下一节]: {{< ref "/docs/getting-started/futures.md#returning-not-ready" >}}
