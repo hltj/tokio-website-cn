@@ -33,27 +33,27 @@
     </h3>
 
     <p>
-      Building on top of Rust, Tokio provides blazingly fast performance,
-      making it an ideal for high performance server applications.
+      Tokio 构建于 Rust 之上，提供了极速的性能，
+      使其成为高性能服务器应用的理想选择。
     </p>
 
     <p>
       <b>零开销抽象</b><br>
-      Tokio's run-time model adds no overhead compared to an equivalent system
-      written entirely by hand.
+      与完全手工编写的同等系统相比，
+      Tokio 运行时模型不会增加任何额外开销。
     </p>
 
     <p>
       <b>并发</b><br>
-      Applications built with Tokio are concurrent out of the box. Tokio
-      provides a multithreaded, work-stealing, task scheduler tuned for
-      async networking work loads.
+      在以 Tokio 构建的应用中，并发是开箱即用的。Tokio
+      提供了已为异步网络工作负载调整好的多线程、工作窃取（work-stealing）与任务调度器<!--
+      -->。
     </p>
 
     <p>
       <b>非阻塞 I/O</b><br>
-      Tokio is backed by the non-blocking, evented, I/O stack provided
-      by the operating system.
+      Tokio 依靠操作系统提供的<!--
+      -->非阻塞、事件化、IO 栈。
     </p>
 
     <hr class="half-rule">
@@ -68,26 +68,26 @@
     </h3>
 
     <p>
-      While Tokio cannot prevent all bugs, it is designed to minimize them.
-      Tokio brings peace of mind when shipping mission critical applications.
+      虽然 Tokio 无法预防所有 bug，但它旨在将其最小化。
+      当用于关键任务应用时，Tokio 带来了安心。
     </p>
 
     <p>
       <b>所有权与类型系统</b><br>
-      Tokio leverages Rust's type system to provide APIs that are hard to misuse.
+      Tokio 利用 Rust 的类型系统来提供很难误用的 API。
     </p>
 
     <p>
       <b>反压</b><br>
-      Backpressure is handled out of the box without having to use any
-      complicated APIs.
+      反压（backpressure）处理开箱即用，无需使用任何<!--
+      -->复杂的 API。
     <p>
 
     <p>
       <b>撤销</b><br>
-      Rust's ownership model allows Tokio to automatically detect when a
-      computation is no longer needed. Tokio will automatically cancel it
-      without the user having to call a <code>cancel</code> function.
+      Rust 的所有权模型让 Tokio 可以自动检测到何时<!--
+      -->不再需要计算。Tokio 会自动撤销之<!--
+      -->而无需用户调用 <code>cancel</code> 函数。
     </p>
 
     <hr class="half-rule">
@@ -101,21 +101,21 @@
     </h3>
 
     <p>
-      Tokio scales well without adding overhead to the application, allowing it
-      to thrive in resource constrained environments.
+      Tokio 可以在不增加应用开销的情况下很好地伸缩，从而使其<!--
+      -->在资源受限的环境中蓬勃发展。
     </p>
 
     <p>
       <b>无垃圾回收器</b><br>
-      Because Tokio uses Rust, no garbage collector or other language run-time
-      is included.
+      因为 Tokio 使用 Rust，所以不含垃圾回收器或者其他的语言运行时<!--
+      -->。
     <p>
 
     <p>
       <b>模块化</b><br>
-      Tokio is built as a collection of small components. The user can pick and
-      choose the parts that work best for the application at hand without paying
-      the cost for features not being used.
+      Tokio 已构建为一些小组件的集合。用户可以选<!--
+      -->择最适合手头应用的部件，而无需为<!--
+      -->没有用到的特性付出代价。
     </p>
 
     <hr class="half-rule">
