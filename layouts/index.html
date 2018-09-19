@@ -9,16 +9,16 @@
       <div class="col-md-7 order-md-1 text-center text-md-left pr-md-5">
         <h1 class="mb-3 tk-text-big">Tokio</h1>
         <p class="lead">
-          The asynchronous run-time for the Rust programming language.
+          Rust 编程语言的异步运行时。
         </p>
         <p class="lead mb-4">
-          Tokio is an open source library providing an asynchronous, event
-          driven platform for building fast, reliable, and lightweight network
-          applications. It leverages Rust's ownership and concurrency model to
-          ensure thread safety.
+          Tokio 是一个开源库，它提供了异步、事件<!--
+          -->驱动的平台，可用于构建快速、可靠且轻量的<!--
+          -->网络应用。它利用 Rust 的所有权与并发模型来<!--
+          -->确保线程安全。
         </p>
         <div class="d-flex flex-column flex-md-row lead mb-3">
-          <a href="{{ ref . "/docs/getting-started/hello-world.md" }}" class="btn btn-lg btn-tk-primary mb-3 mb-md-0 mr-md-3">Get started</a>
+          <a href="{{ ref . "/docs/getting-started/hello-world.md" }}" class="btn btn-lg btn-tk-primary mb-3 mb-md-0 mr-md-3">入门</a>
         </div>
       </div>
     </div>
@@ -29,7 +29,7 @@
   <div class="col-12 col-md-4 p-3 p-md-5 bg-light border border-white">
     <h3>
       <i class="fa fa-rocket" aria-hidden="true"></i>
-      Fast
+      快速
     </h3>
 
     <p>
@@ -38,33 +38,33 @@
     </p>
 
     <p>
-      <b>Zero-cost abstractions</b><br>
+      <b>零开销抽象</b><br>
       Tokio's run-time model adds no overhead compared to an equivalent system
       written entirely by hand.
     </p>
 
     <p>
-      <b>Concurrency</b><br>
+      <b>并发</b><br>
       Applications built with Tokio are concurrent out of the box. Tokio
       provides a multithreaded, work-stealing, task scheduler tuned for
       async networking work loads.
     </p>
 
     <p>
-      <b>Non-blocking I/O</b><br>
+      <b>非阻塞 I/O</b><br>
       Tokio is backed by the non-blocking, evented, I/O stack provided
       by the operating system.
     </p>
 
     <hr class="half-rule">
-    <a class="btn btn-outline-primary" href="/docs/overview/#fast">Learn more</a>
+    <a class="btn btn-outline-primary" href="/docs/overview/#fast">了解更多</a>
   </div>
 
   <!--  style="text-decoration: line-through" -->
   <div class="col-12 col-md-4 p-3 p-md-5 bg-light border border-white">
     <h3>
       <i class="fa fa-shield" aria-hidden="true"></i>
-      Reliable
+      可靠
     </h3>
 
     <p>
@@ -73,31 +73,31 @@
     </p>
 
     <p>
-      <b>Ownership and type system</b><br>
+      <b>所有权与类型系统</b><br>
       Tokio leverages Rust's type system to provide APIs that are hard to misuse.
     </p>
 
     <p>
-      <b>Backpressure</b><br>
+      <b>反压</b><br>
       Backpressure is handled out of the box without having to use any
       complicated APIs.
     <p>
 
     <p>
-      <b>Cancellation</b><br>
+      <b>撤销</b><br>
       Rust's ownership model allows Tokio to automatically detect when a
       computation is no longer needed. Tokio will automatically cancel it
       without the user having to call a <code>cancel</code> function.
     </p>
 
     <hr class="half-rule">
-    <a class="btn btn-outline-primary" href="/docs/overview/#reliable">Learn more</a>
+    <a class="btn btn-outline-primary" href="/docs/overview/#reliable">了解更多</a>
   </div>
 
   <div class="col-12 col-md-4 p-3 p-md-5 bg-light border border-white">
     <h3>
       <i class="fa fa-dashboard" aria-hidden="true"></i>
-      Lightweight
+      轻量
     </h3>
 
     <p>
@@ -106,20 +106,20 @@
     </p>
 
     <p>
-      <b>No garbage collector</b><br>
+      <b>无垃圾回收器</b><br>
       Because Tokio uses Rust, no garbage collector or other language run-time
       is included.
     <p>
 
     <p>
-      <b>Modular</b><br>
+      <b>模块化</b><br>
       Tokio is built as a collection of small components. The user can pick and
       choose the parts that work best for the application at hand without paying
       the cost for features not being used.
     </p>
 
     <hr class="half-rule">
-    <a class="btn btn-outline-primary" href="/docs/overview/#lightweight">Learn more</a>
+    <a class="btn btn-outline-primary" href="/docs/overview/#lightweight">了解更多</a>
   </div>
 </div>
 
@@ -128,10 +128,10 @@
     <ul class="tk-footer-links">
       <li><a href="https://github.com/tokio-rs/tokio">GitHub</a></li>
       <li><a href="https://twitter.com/tokio_rs">Twitter</a></li>
-      <li><a href="https://github.com/tokio-rs/tokio/tree/master/examples">Examples</a></li>
-      <li><a href="/docs/overview/">About</a></li>
+      <li><a href="https://github.com/tokio-rs/tokio/tree/master/examples"> 示例</a></li>
+      <li><a href="/docs/overview/">关于</a></li>
     </ul>
-    <p>Built with all the love in the world by <a href="https://twitter.com/carllerche" target="_blank" rel="noopener">@carllerche</a> with the help of <a href="https://github.com/tokio-rs/tokio/graphs/contributors">our contributors</a>.</p>
+    <p><a href="https://twitter.com/carllerche" target="_blank" rel="noopener">@carllerche</a> 在<a href="https://github.com/tokio-rs/tokio/graphs/contributors">项目贡献者</a>的帮助下倾情打造。本站由<a href="https://hltj.me">灰蓝天际</a>翻译。</p>
   </div>
 </footer>
 

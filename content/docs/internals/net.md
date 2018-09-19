@@ -279,7 +279,7 @@ tokio::run(future::lazy(move || {
 [poll_accept]: http://docs.rs/tokio/0.1.8/tokio/net/struct.TcpListener.html#method.poll_accept
 [`with_default`]: https://docs.rs/tokio-reactor/0.1.5/tokio_reactor/fn.with_default.html
 [`Handle::default`]: https://docs.rs/tokio-reactor/0.1.5/tokio_reactor/struct.Handle.html#method.default
-[building]: https://tokio.rs/docs/going-deeper/building-runtime/
+[building]: https://tokio-cn.github.io/docs/going-deeper/building-runtime/
 
 # The network driver
 
