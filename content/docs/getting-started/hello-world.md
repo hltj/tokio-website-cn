@@ -88,9 +88,10 @@ let server = listener.incoming().for_each(|socket| {
 # }
 ```
 
-这些组合子函数用于定义异步任务。对
-`listener.incoming()` 的调用返回一个已接受连接的 [`Stream`]。[`Stream`]
-有点像异步迭代器。
+The call to `listener.incoming()` returns a [`Stream`] of accepted connections.
+A [`Stream`] is kind of like an asynchronous iterator. The `for_each` method
+yields new sockets each time a socket is accepted. `for_each` is an example of
+a combinator function that defines how asynchronous work will be processed.
 
 每个组合子函数都获得必要状态的所有权以及用<!--
 -->以执行的回调，并返回一个新的 `Future` 或者是有附加“步骤”顺次排入的 `Stream`<!--
@@ -98,12 +99,15 @@ let server = listener.incoming().for_each(|socket| {
 
 返回的那些 future 与 stream 都是惰性的，也就是说，在调用该组合子时不执行任何操作<!--
 -->。相反，一旦所有异步步骤都已顺次排入，
-最终的 `Future`（代表该任务）就会在执行子上产生。这是<!--
+最终的 `Future`（代表该任务）就会“产生”。这是<!--
 -->之前定义的工作开始运行的时候。
 
 我们稍后会深入探讨这些 future 与 stream。
 
-# 产生任务
+# Running the server
+
+So far we have a future representing the work to be done by our server, but we
+need a way to spawn (i.e., run) that work. We need an executor.
 
 执行子负责调度异步任务，使其<!--
 -->完成。有很多执行子的实现可供选择，每个都有<!--
@@ -132,8 +136,7 @@ tokio::run(server);
 
 `tokio::run` 会启动该运行时，阻塞当前进程直到<!--
 -->所有已产生的任务都已完成并且所有资源（如 TCP 套接字）都已<!--
--->释放。使用 [`tokio::spawn`] 产生的任务**必须**来自<!--
--->[运行时][rt]的上下文。
+-->释放。
 
 至此，我们仅仅在执行子上执行了单个任务，因此 `server` 任务<!--
 -->是阻塞 `run` 返回的唯一任务。
@@ -144,7 +147,7 @@ tokio::run(server);
 
 我们的目标是对每个已接受的套接字写入 `"hello world\n"`。我们会这样做：<!--
 -->通过定义一个新的异步任务来执行写操作，并在<!--
--->同一 `current_thread` 执行子上产生该任务。
+-->同一执行子上产生该任务。
 
 回到 `incoming().for_each` 块。
 
