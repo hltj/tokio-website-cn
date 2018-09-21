@@ -20,7 +20,7 @@ env:
 
 deploy:
   provider: script
-  script: bash deploy.sh
+  script: bash deploy_cn.sh
   skip_cleanup: true
   on:
     branch: master
