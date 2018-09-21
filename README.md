@@ -2,7 +2,7 @@
 
 Tokio 项目官方网站的中文翻译：[https://tokio-cn.github.io](https://tokio-cn.github.io)。
 
-[![Build Status](https://travis-ci.org/tokio-rs/website.svg?branch=master)](https://travis-ci.org/tokio-rs/website)
+[![Build Status](https://travis-ci.org/hltj/tokio-website-cn.svg?branch=master)](https://travis-ci.org/hltj/tokio-website-cn)
 
 ## Getting Started
 
