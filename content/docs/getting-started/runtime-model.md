@@ -49,10 +49,10 @@ let n = socket.read(&mut buf).unwrap();
 `read` 函数会立即返回，表明该套接字“未<!--
 -->准备好”执行读取操作。
 
-When using a Tokio [`TcpStream`], a call to `read` will always immediately return
-a value ([`ErrorKind::WouldBlock`]) even if there is no pending data to read.
-If there is no pending data, the caller is responsible for calling `read` again
-at a later time.  The trick is to know when that "later time" is.
+当使用 Tokio [`TcpStream`] 时，对 `read` 的调用会立即返回<!--
+-->一个值（[`ErrorKind::WouldBlock`]）即使没有待读取数据。
+如果没有待读取数据，调用方负责稍后再次调用 `read`<!--
+-->。其诀窍是知道什么时候是“稍后”。
 
 考虑非阻塞读取的另一种方式是“轮询”用于读取数据的<!--
 -->套接字。
