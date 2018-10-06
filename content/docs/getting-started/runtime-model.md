@@ -162,10 +162,12 @@ impl SpinExecutor {
     }
 
     pub fn run(&mut self) {
+        // Pop tasks off the front in a tight loop
         while let Some(mut task) = self.tasks.pop_front() {
             match task.poll().unwrap() {
                 Async::Ready(_) => {}
                 Async::NotReady => {
+                    // If the task is not ready put it to the back of queue
                     self.tasks.push_back(task);
                 }
             }

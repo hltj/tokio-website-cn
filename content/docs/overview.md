@@ -1,12 +1,18 @@
 ---
-title: "概述"
+title: "What is Tokio?"
 weight: 1
 menu: "docs"
 ---
 
-Tokio is an event-driven, non-blocking I/O platform for writing
-asynchronous applications with the Rust programming language. At a high
-level, it provides a few major components:
+Tokio allows developers to write asynchronous programs in the Rust programming
+language. Instead of synchronously waiting for long-running operations like reading
+a file or waiting for a timer to complete before moving on to the next thing,
+Tokio allows developers to write programs where execution continues while the
+long-running operations are in progress.
+
+More specifically, Tokio is an event-driven, non-blocking I/O platform
+for writing asynchronous applications with Rust. At a high level, it
+provides a few major components:
 
 * A multithreaded, work-stealing based task [scheduler].
 * A [reactor] backed by the operating system's event queue (epoll, kqueue,
@@ -40,8 +46,8 @@ overhead to not using Tokio.
 ## Concurrency
 
 Out of the box, Tokio provides a multi-threaded, [work-stealing], scheduler. So,
-when you start your appication with `tokio::run`, you are already using all of
-your computer's  CPU cores.
+when you start the Tokio runtime, you are already using all of your computer's
+CPU cores.
 
 Modern computers increase their performance by adding cores, so being able to
 utilize many cores is critical for writing fast applications.
@@ -71,24 +77,12 @@ ship applications to production with confidence.
 ## Ownership and type system
 
 Rust's ownership model and type system enables implementing system level
-applications without the fear of memory unsafety. It is prevents classic bugs
+applications without the fear of memory unsafety. It prevents classic bugs
 such as accessing uninitialized memory and use after free. It does this without
 adding any run-time overhead.
 
 Further, APIs are able to leverage the type system to provide hard to misuse
-APIs. For example, `Mutex` does not require the user to explicitly unlock:
-
-```
-use std::sync::Mutex;
-
-# let foo = "".to_string();
-let data = Mutex::new(foo);
-
-let locked = data.lock().unwrap();
-println!("locked data: {}", &locked[..]);
-
-// The lock is automatically released here when `locked` goes out of scope.
-```
+APIs. For example, `Mutex` does not require the user to explicitly unlock.
 
 ## Backpressure
 

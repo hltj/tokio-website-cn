@@ -1,9 +1,9 @@
 +++
 date = "2018-08-27"
 title = "Experimental async / await support for Tokio"
-description = "August 24, 2018"
+description = "August 27, 2018"
 menu = "blog"
-weight = 992
+weight = 991
 +++
 
 Happy Monday!
@@ -169,4 +169,4 @@ And with that, have a great week!
 
 [`tokio-async-await`]: https://crates.io/crates/tokio-async-await
 [examples]: https://github.com/tokio-rs/tokio/blob/master/tokio-async-await/examples
-[hyper]: https://github.com/tokio-rs/tokio/blob/master/tokio-async-await/examples/hyper.rs
+[hyper]: https://github.com/tokio-rs/tokio/blob/master/tokio-async-await/examples/src/hyper.rs

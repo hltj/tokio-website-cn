@@ -10,7 +10,11 @@ menu:
 -->。这个服务器会监听接入的连接。收到连接<!--
 -->后，它会向客户端写入“hello world”并关闭连接。
 
-让我们开始吧。
+Before we begin you should have a basic understanding of how TCP sockets work. Having
+an understanding of Rust's [standard library implementation][TcpListener] is also
+helpful.
+
+我们开始吧。
 
 首先，生成一个新的 crate。
 
@@ -69,7 +73,7 @@ fn main() {
 # use tokio::net::TcpListener;
 # use tokio::prelude::*;
 # fn main() {
-#     let addr = "127.0.0.1:6142".parse().unwrap();
+#     let addr = "127.0.0.1:0".parse().unwrap();
 #     let listener = TcpListener::bind(&addr).unwrap();
 let server = listener.incoming().for_each(|socket| {
     println!("accepted socket; addr={:?}", socket.peer_addr().unwrap());
@@ -89,29 +93,32 @@ let server = listener.incoming().for_each(|socket| {
 ```
 
 调用 `listener.incoming()` 会返回一个已接受连接的 [`Stream`]。
-[`Stream`] 有点像异步迭代器。每次接受套接字时，`for_each` 方法都会产生<!--
--->新的套接字。`for_each` 是组合子函数的一个示例，
+We'll learn more about [`Streams`] later in the guide, but for now you can think of
+a [`Stream`] as an asynchronous iterator. 每次接受套接字时，
+`for_each` 方法都会产生新的套接字。`for_each` 是组合子函数的一个示例，
 它定义了如何处理异步作业。
 
 每个组合子函数都获得必要状态的所有权以及用<!--
--->以执行的回调，并返回一个新的 `Future` 或者是有附加“步骤”顺次排入的 `Stream`<!--
--->。
+-->以执行的回调，并返回一个新的 `Stream` 或者是有附加“步骤”顺次排入的 `Future`<!--
+-->。A `Future` is a value representing some computation
+that will complete at some point in the future
 
 返回的那些 future 与 stream 都是惰性的，也就是说，在调用该组合子时不执行任何操作<!--
 -->。相反，一旦所有异步步骤都已顺次排入，
-最终的 `Future`（代表该任务）就会“产生”。这是<!--
+最终的 `Future`（代表整个任务）就会“产生”（即运行）。这是<!--
 -->之前定义的作业开始运行的时候。
 
 我们稍后会深入探讨这些 future 与 stream。
 
 # 运行服务器
 
-到目前为止，我们有一个表示服务器会完成的作业的 future，但是我们<!--
--->需要一种方式来产生（即运行）该作业。我们需要一个执行子。
+到目前为止，我们有一个表示服务器会完成的作业的 `Future`，但是我们<!--
+-->需要一种方式来产生该作业。我们需要一个执行子。
 
 执行子负责调度异步任务，使其<!--
 -->完成。有很多执行子的实现可供选择，每个都有<!--
--->不同的优缺点。在本例中，我们会使用 [Tokio 运行时][rt]。
+-->不同的优缺点。在本例中，我们会使用 [Tokio 运行时][rt]
+which comes with a set executor implementation.
 
 Tokio 运行时是为异步应用程序预配置的运行时。它<!--
 -->包含一个线程池作为默认执行子。该线程池已经为<!--
@@ -149,7 +156,7 @@ tokio::run(server);
 -->通过定义一个新的异步任务来执行写操作，并在<!--
 -->同一执行子上产生该任务。
 
-回到 `incoming().for_each` 块。
+回到 `incoming().for_each` 块：
 
 ```rust
 # #![deny(deprecated)]
@@ -159,7 +166,7 @@ tokio::run(server);
 # use tokio::net::TcpListener;
 # use tokio::prelude::*;
 # fn main() {
-#     let addr = "127.0.0.1:6142".parse().unwrap();
+#     let addr = "127.0.0.1:0".parse().unwrap();
 #     let listener = TcpListener::bind(&addr).unwrap();
 let server = listener.incoming().for_each(|socket| {
     println!("accepted socket; addr={:?}", socket.peer_addr().unwrap());
@@ -197,13 +204,14 @@ let server = listener.incoming().for_each(|socket| {
 -->在同一个套接字上顺次排入附加的读取或写入。然而，我们并<!--
 -->没有任何事情可做，所有我们只是释放该套接字，即可关闭该套接字。
 
-可以在[这里][full-code]找到完整的示例
+可以在[这里][full-code]找到完整的示例。
 
 ## 下一步
 
 我们这里只是对 Tokio 及其异步模型小试牛刀。本指南的下一页<!--
 -->会开始深入探讨 Tokio 运行时模型。
 
+[TcpListener]:https://doc.rust-lang.org/std/net/struct.TcpListener.html
 [`Future`]: {{< api-url "futures" >}}/future/trait.Future.html
 [`Stream`]: {{< api-url "futures" >}}/stream/trait.Stream.html
 [rt]: {{< api-url "tokio" >}}/runtime/index.html
