@@ -167,7 +167,7 @@ impl SpinExecutor {
             match task.poll().unwrap() {
                 Async::Ready(_) => {}
                 Async::NotReady => {
-                    // 如果任务未就绪就将其置于队列后面
+                    // 如果任务未就绪就将其置于队列的后面
                     self.tasks.push_back(task);
                 }
             }
