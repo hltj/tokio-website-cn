@@ -93,7 +93,7 @@ fn poll_widget() -> Async<Widget> { …… }
 pub struct MyTask;
 
 impl Future for MyTask {
-    // The value this future will have when ready
+    // 这个 future 就绪后将会有的值
     type Item = ();
     type Error = ();
 
@@ -149,8 +149,8 @@ impl Future for MyTask {
 # use std::collections::VecDeque;
 #
 pub struct SpinExecutor {
-    // the tasks an executor is responsible for in
-    // a double ended queue
+    // 执行子在双端队列中
+    // 所负责的任务
     tasks: VecDeque<Box<Future<Item = (), Error = ()>>>,
 }
 
@@ -162,12 +162,12 @@ impl SpinExecutor {
     }
 
     pub fn run(&mut self) {
-        // Pop tasks off the front in a tight loop
+        // 在紧凑循环中从前面弹出任务
         while let Some(mut task) = self.tasks.pop_front() {
             match task.poll().unwrap() {
                 Async::Ready(_) => {}
                 Async::NotReady => {
-                    // If the task is not ready put it to the back of queue
+                    // 如果任务未就绪就将其置于队列后面
                     self.tasks.push_back(task);
                 }
             }
