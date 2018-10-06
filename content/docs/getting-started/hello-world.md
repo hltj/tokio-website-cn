@@ -10,9 +10,9 @@ menu:
 -->。这个服务器会监听接入的连接。收到连接<!--
 -->后，它会向客户端写入“hello world”并关闭连接。
 
-Before we begin you should have a basic understanding of how TCP sockets work. Having
-an understanding of Rust's [standard library implementation][TcpListener] is also
-helpful.
+在开始之前，你应该对 TCP 套接字的工作原理有基本的了解。
+了解 Rust 的[标准库实现][TcpListener]也<!--
+-->很有帮助。
 
 我们开始吧。
 
@@ -93,15 +93,15 @@ let server = listener.incoming().for_each(|socket| {
 ```
 
 调用 `listener.incoming()` 会返回一个已接受连接的 [`Stream`]。
-We'll learn more about [`Streams`] later in the guide, but for now you can think of
-a [`Stream`] as an asynchronous iterator. 每次接受套接字时，
+我们会在指南的后续部分学习更多关于 [`Streams`] 的内容，不过现在你可以将
+[`Stream`] 看作异步的迭代器。每次接受套接字时，
 `for_each` 方法都会产生新的套接字。`for_each` 是组合子函数的一个示例，
 它定义了如何处理异步作业。
 
 每个组合子函数都获得必要状态的所有权以及用<!--
 -->以执行的回调，并返回一个新的 `Stream` 或者是有附加“步骤”顺次排入的 `Future`<!--
--->。A `Future` is a value representing some computation
-that will complete at some point in the future
+-->。`Future` 是表示会在未来的某个时刻完成的<!--
+-->某些计算的值
 
 返回的那些 future 与 stream 都是惰性的，也就是说，在调用该组合子时不执行任何操作<!--
 -->。相反，一旦所有异步步骤都已顺次排入，
@@ -117,8 +117,8 @@ that will complete at some point in the future
 
 执行子负责调度异步任务，使其<!--
 -->完成。有很多执行子的实现可供选择，每个都有<!--
--->不同的优缺点。在本例中，我们会使用 [Tokio 运行时][rt]
-which comes with a set executor implementation.
+-->不同的优缺点。在本例中，我们会使用 [Tokio 运行时][rt]，
+它有一组执行子的实现。
 
 Tokio 运行时是为异步应用程序预配置的运行时。它<!--
 -->包含一个线程池作为默认执行子。该线程池已经为<!--
