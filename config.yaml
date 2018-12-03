@@ -11,10 +11,10 @@ menu:
       name: "入门"
       weight: 1000
     - identifier: "futures"
-      name: "Working with futures"
+      name: "使用 future"
       weight: 2000
     - identifier: "io"
-      name: "I/O with Tokio"
+      name: "使用 Tokio 的 I/O"
       weight: 3000
     - identifier: "going_deeper"
       name: "深入"
