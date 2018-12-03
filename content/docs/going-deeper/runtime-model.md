@@ -1,9 +1,9 @@
 ---
 title: "运行时模型"
-weight : 1020
+weight : 7030
 menu:
   docs:
-    parent: getting_started
+    parent: going_deeper
 ---
 
 现在我们要介绍 Tokio / future 运行时模型。Tokio 建立在
@@ -151,12 +151,12 @@ impl Future for MyTask {
 pub struct SpinExecutor {
     // 执行子在双端队列中
     // 所负责的任务
-    tasks: VecDeque<Box<Future<Item = (), Error = ()>>>,
+    tasks: VecDeque<Box<Future<Item = (), Error = ()> + Send>>,
 }
 
 impl SpinExecutor {
     pub fn spawn<T>(&mut self, task: T)
-    where T: Future<Item = (), Error = ()> + 'static
+    where T: Future<Item = (), Error = ()> + 'static + Send
     {
         self.tasks.push_back(Box::new(task));
     }
@@ -222,7 +222,7 @@ impl SpinExecutor {
 ```
 
 当任务从“未准备好”变成“已准备好”时能够得到通知是<!--
--->[`futures`] 任务模型的核心。我们很快会进一步深入探讨。
+-->[`futures`] 任务模型的核心。
 
 [`futures`]: {{< api-url "futures" >}}
 [标准库]: https://doc.rust-lang.org/std/

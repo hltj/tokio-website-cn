@@ -21,11 +21,11 @@ menu:
 首先，生成一个新的 crate。
 
 ```bash
-$ cargo new --bin hello-world
+$ cargo new hello-world
 $ cd hello-world
 ```
 
-接下来，添加必要的依赖项：
+接下来，在 `Cargo.toml` 中添加必要的依赖项：
 
 ```toml
 [dependencies]
@@ -44,6 +44,10 @@ use tokio::prelude::*;
 # fn main() {}
 ```
 
+Here we use Tokio's own [`io`] and [`net`] modules. These modules provide the same
+abstractions over networking and I/O-operations as the corresponding modules in `std`
+with a small difference: all actions are performed asynchronously.
+
 # 创建流
 
 第一步是创建 `TcpStream`。我们使用 Tokio 提供的 `TcpStream`
@@ -57,14 +61,14 @@ use tokio::prelude::*;
 fn main() {
     // 解析我们即将交互的任何服务器的地址
     let addr = "127.0.0.1:6142".parse().unwrap();
-    let stream = TcpStream::connect(&addr);
+    let client = TcpStream::connect(&addr);
 
     // 后续片段写到这里……
 }
 ```
 
-接下来，我们定义  `client` 任务。这个异步任务会创建流<!--
--->并且在流创建后产生（yield）该流以进行后续处理。
+Next, we'll add some to the `client` `TcpStream`. This asynchronous task now creates
+the stream and then yields it once it's been created for additional processing.
 
 ```rust
 # #![deny(deprecated)]
@@ -74,7 +78,7 @@ fn main() {
 # use tokio::prelude::*;
 # fn main() {
 # let addr = "127.0.0.1:6142".parse().unwrap();
-let hello_world = TcpStream::connect(&addr).and_then(|stream| {
+let client = TcpStream::connect(&addr).and_then(|stream| {
     println!("created stream");
 
     // 这里处理 stream。
@@ -110,8 +114,8 @@ _实际_ 执行时，我们会在下文看到。
 值得重申的是返回的那些 future 都是惰性的，也就是说，在调用该组合子时不执行任何操作<!--
 -->。相反，一旦所有异步步骤都已顺次排入，
 最终的 `Future`（代表整个任务）就会“产生”（即运行）。这是<!--
--->之前定义的作业开始运行的时候。换句话说，
-到目前为止我们编写的代码实际上并没有创建 TCP 流。
+-->之前定义的作业开始运行的时候。换句话说，到目前为止我们编写的代码<!--
+-->实际上并没有创建 TCP 流。
 
 我们稍后会更深入地探讨这些 future（以及 stream 与 sink 的相关概念）<!--
 -->。
@@ -155,7 +159,8 @@ let client = TcpStream::connect(&addr).and_then(|stream| {
 -->。在我们的示例中，我们只是向 `STDOUT` 写一条消息，以示<!--
 -->写操作已完成。
 
-请注意 `result` 是包含原始流的 `Result`。这让我们可以<!--
+请注意 `result` 是包含原始流的 `Result` (compare to
+`and_then`, which passes the stream without the `Result` wrapper)。这让我们可以<!--
 -->对同一流排入附加的读或写操作。当然，我们并<!--
 -->没有任何要做的，所以只是丢弃了该流，这会自动关闭之。
 
@@ -193,12 +198,32 @@ that our Future has been run to completion.
 
 可以在[这里][full-code]找到完整的示例。
 
-## 下一步
+# Running the code
+
+[Netcat] is a tool for quickly creating TCP sockets from the command line. The following
+command starts a listening TCP socket on the previously specified port.
+
+```bash
+$ nc -l 6142
+```
+
+In a different terminal we'll run our project.
+
+```bash
+$ cargo run
+```
+
+If everything goes well, you should see `hello world` printed from Netcat.
+
+# 下一步
 
 我们这里只是对 Tokio 及其异步模型小试牛刀。本指南的下一页<!--
--->会开始深入探讨 Tokio 运行时模型。
+-->会开始稍深入探讨 Future 与 Tokio 运行时模型。
 
 [`Future`]: {{< api-url "futures" >}}/future/trait.Future.html
 [rt]: {{< api-url "tokio" >}}/runtime/index.html
+[`io`]: {{< api-url "tokio" >}}/io/index.html
+[`net`]: {{< api-url "tokio" >}}/net/index.html
 [`io::write_all`]: {{< api-url "tokio-io" >}}/io/fn.write_all.html
-[full-code]:https://github.com/tokio-rs/tokio/blob/master/examples/hello_world.rs
+[full-code]: https://github.com/tokio-rs/tokio/blob/master/examples/hello_world.rs
+[Netcat]: http://netcat.sourceforge.net/
