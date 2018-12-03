@@ -7,12 +7,12 @@ menu:
 ---
 
 为了开始我们的 Tokio 之旅，我们会以惯例“hello world”开始<!--
--->。 This program will create a TCP stream and write "hello, world!" to the stream.
-The difference between this and a Rust program that writes to a TCP stream without Tokio
-is that this program won't block program execution when the stream is created or when
-our "hello, world!" message is written to the stream.
+-->。 这个程序会创建一个 TCP 流并将“hello, world!”写入到流中。
+这与未使用 Tokio 写入到 TCP 流的 Rust 程序之间的区别<!--
+-->在于，这个程序在创建流或者<!--
+-->将“hello, world!”消息写入到流中的时候不会阻塞程序执行。
 
-在开始之前，你应该对 TCP stream 的工作原理有最基本的了解。
+在开始之前，你应该对 TCP 流的工作原理有最基本的了解。
 了解 Rust 的[标准库实现](https://doc.rust-lang.org/std/net/struct.TcpStream.html)<!--
 -->也很有帮助。
 
@@ -44,7 +44,7 @@ use tokio::prelude::*;
 # fn main() {}
 ```
 
-# Creating the stream
+# 创建流
 
 第一步是创建 `TcpStream`。我们使用 Tokio 提供的 `TcpStream`
 实现。
@@ -55,7 +55,7 @@ use tokio::prelude::*;
 #
 # use tokio::net::TcpStream;
 fn main() {
-    // Parse the address of whatever server we're talking to
+    // 解析我们即将交互的任何服务器的地址
     let addr = "127.0.0.1:6142".parse().unwrap();
     let stream = TcpStream::connect(&addr);
 
@@ -63,8 +63,8 @@ fn main() {
 }
 ```
 
-接下来，我们定义  `client` 任务。这个异步任务会 create the stream
-and then yield the stream once it's been created for additional processing.
+接下来，我们定义  `client` 任务。这个异步任务会创建流<!--
+-->并且在流创建后产生（yield）该流以进行后续处理。
 
 ```rust
 # #![deny(deprecated)]
@@ -91,15 +91,15 @@ let hello_world = TcpStream::connect(&addr).and_then(|stream| {
 # }
 ```
 
-调用 `TcpStream::connect` 会返回一个已创建的 TCP stream 的 [`Future`]。
+调用 `TcpStream::connect` 会返回一个已创建的 TCP 流的 [`Future`]。
 我们会在指南的后续部分学习更多关于 [`Futures`] 的内容，不过现在你可以将
-[`Stream`] as a value that represents something that will eventually happen in the
-future (in this case the stream will be created). This means that `TcpStream::connect` does
-not wait for the stream to be created before it returns. Rather it returns immediately
-with a value representing the work of creating a TCP stream. We'll see down below when this work
-_actually_ gets executed.
+[`Stream`] 作为表示将来终究会发生的事物的值<!--
+-->（在本例中会创建流）。这意味着 `TcpStream::connect`  不会<!--
+-->等待流创建后再返回。而是立即返回<!--
+-->一个表示创建 TCP 流这项工作的值。当这项工作
+_实际_ 执行时，我们会在下文看到。
 
-The `and_then` method yields the stream once it has been created. `and_then` 是<!--
+上述 `and_then` 方法会在流创建后产生该流。`and_then` 是<!--
 -->定义了如何处理异步作业的组合子函数的一个示例。
 
 每个组合子函数都获得必要状态的所有权以及用<!--
@@ -110,21 +110,21 @@ The `and_then` method yields the stream once it has been created. `and_then` 是
 值得重申的是返回的那些 future 都是惰性的，也就是说，在调用该组合子时不执行任何操作<!--
 -->。相反，一旦所有异步步骤都已顺次排入，
 最终的 `Future`（代表整个任务）就会“产生”（即运行）。这是<!--
--->之前定义的作业开始运行的时候。 In other words, the code
-we've written so far does not actually create a TCP stream.
+-->之前定义的作业开始运行的时候。换句话说，
+到目前为止我们编写的代码实际上并没有创建 TCP 流。
 
 我们稍后会更深入地探讨这些 future（以及 stream 与 sink 的相关概念）<!--
 -->。
 
-It's also important to note that we've called `map_err` to convert whatever error
-we may have gotten to `()` before we can actually run our future. This ensures that
-we acknowledge errors.
+同样重要需要注意的是，我们已经在可以真正运行 future 之前调用了 `map_err` 将<!--
+-->可以遇到的任何错误都转换成了 `()`。这确保我们已<!--
+-->知悉错误的可能。
 
-Next, we will process the stream.
+接下来，我们会处理该流。
 
 # 写数据
 
-我们的目标是将 `"hello world\n"` 写入到 stream。
+我们的目标是将 `"hello world\n"` 写入到流中。
 
 回到 `TcpStream::connect(addr).and_then` 块：
 
@@ -149,17 +149,17 @@ let client = TcpStream::connect(&addr).and_then(|stream| {
 # }
 ```
 
-The [`io::write_all`] function takes ownership of `stream`, returning a
-[`Future`] that completes once the entire message has been written to the
-stream. `then` is used to sequence a step that gets run once the write has
-completed. In our example, we just write a message to `STDOUT` indicating that
-the write has completed.
+[`io::write_all`] 函数取得 `stream` 的所有权，并返回一个
+[`Future`]，当整条消息都已写入到流时，该 future 就完成<--
+-->了。`then` 用于排入一个写入完成后的步骤<!--
+-->。在我们的示例中，我们只是向 `STDOUT` 写一条消息，以示<!--
+-->写操作已完成。
 
-Note that `result` is a `Result` that contains the original stream. This allows us
-to sequence additional reads or writes to the same stream. However, we have
-nothing more to do, so we just drop the stream, which automatically closes it.
+请注意 `result` 是包含原始流的 `Result`。这让我们可以<!--
+-->对同一流排入附加的读或写操作。当然，我们并<!--
+-->没有任何要做的，所以只是丢弃了该流，这会自动关闭之。
 
-# Running the client task
+# 运行客户端任务
 
 到目前为止，我们有一个表示程序会完成的作业的 `Future`，但是我们<!--
 -->并没有真正运行它。需要一种方式来“产生”该作业。我们需要一个执行子。
