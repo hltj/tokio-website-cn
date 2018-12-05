@@ -44,9 +44,9 @@ use tokio::prelude::*;
 # fn main() {}
 ```
 
-Here we use Tokio's own [`io`] and [`net`] modules. These modules provide the same
-abstractions over networking and I/O-operations as the corresponding modules in `std`
-with a small difference: all actions are performed asynchronously.
+这里我们使用 Tokio 自己的 [`io`] 与 [`net`] 模块。这俩模块提供与
+`std` 中相应模块几乎相同的网络与 I/O 操作的抽象，
+只有很小的差异：所有操作都是异步执行的。
 
 # 创建流
 
@@ -67,8 +67,8 @@ fn main() {
 }
 ```
 
-Next, we'll add some to the `client` `TcpStream`. This asynchronous task now creates
-the stream and then yields it once it's been created for additional processing.
+接下来，我们会向 `client` `TcpStream` 中添加一些内容。这个异步任务现在创建了<!--
+-->流，一旦创建完成就会产生（yield）之以进行后续处理。
 
 ```rust
 # #![deny(deprecated)]
@@ -159,8 +159,8 @@ let client = TcpStream::connect(&addr).and_then(|stream| {
 -->。在我们的示例中，我们只是向 `STDOUT` 写一条消息，以示<!--
 -->写操作已完成。
 
-请注意 `result` 是包含原始流的 `Result` (compare to
-`and_then`, which passes the stream without the `Result` wrapper)。这让我们可以<!--
+请注意 `result` 是包含原始流的 `Result` (（与
+`and_then` 相比，后者传递没有 `Result` 包装的流）。这让我们可以<!--
 -->对同一流排入附加的读或写操作。当然，我们并<!--
 -->没有任何要做的，所以只是丢弃了该流，这会自动关闭之。
 
@@ -193,27 +193,27 @@ println!("Stream has been created and written to.");
 -->都已完成并且所有资源（如文件与套接字）都已释放。
 
 至此，我们仅仅在执行子上执行了单个任务，因此 `client` 任务<!--
--->是阻塞 `run` 返回的唯一任务。 Once `run` has returned we can be sure
-that our Future has been run to completion.
+-->是阻塞 `run` 返回的唯一任务。 一旦 `run` 返回，就可以确定<!--
+-->我们的 Future 已经运行完成。
 
 可以在[这里][full-code]找到完整的示例。
 
-# Running the code
+# 运行该代码
 
-[Netcat] is a tool for quickly creating TCP sockets from the command line. The following
-command starts a listening TCP socket on the previously specified port.
+[Netcat] 是一个在命令行快速创建 TCP 套接字的工具。以下<!--
+-->命令在先前指定的端口上启动 TCP 套接字监听。
 
 ```bash
 $ nc -l 6142
 ```
 
-In a different terminal we'll run our project.
+在另一个终端运行我们的项目。
 
 ```bash
 $ cargo run
 ```
 
-If everything goes well, you should see `hello world` printed from Netcat.
+如果一切顺利，你会看到 Netcat 输出的 `hello world`。
 
 # 下一步
 
