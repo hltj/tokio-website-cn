@@ -204,8 +204,11 @@ println!("Stream has been created and written to.");
 -->命令在先前指定的端口上启动 TCP 套接字监听。
 
 ```bash
-$ nc -l 6142
+$ nc -l -p 6142
 ```
+> The command above is used with the GNU version of netcat that comes stock on many
+> unix based operating systems. The following command can be used with the
+> [NMap.org][NMap.org] version: `$ ncat -l -p 6142`
 
 在另一个终端运行我们的项目。
 
@@ -221,9 +224,11 @@ $ cargo run
 -->会开始稍深入探讨 Future 与 Tokio 运行时模型。
 
 [`Future`]: {{< api-url "futures" >}}/future/trait.Future.html
+[`Futures`]: /docs/getting-started/futures/
 [rt]: {{< api-url "tokio" >}}/runtime/index.html
 [`io`]: {{< api-url "tokio" >}}/io/index.html
 [`net`]: {{< api-url "tokio" >}}/net/index.html
 [`io::write_all`]: {{< api-url "tokio-io" >}}/io/fn.write_all.html
 [full-code]: https://github.com/tokio-rs/tokio/blob/master/examples/hello_world.rs
 [Netcat]: http://netcat.sourceforge.net/
+[Nmap.org]: https://nmap.org
