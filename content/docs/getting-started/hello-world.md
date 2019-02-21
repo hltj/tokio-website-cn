@@ -206,9 +206,9 @@ println!("Stream has been created and written to.");
 ```bash
 $ nc -l -p 6142
 ```
-> The command above is used with the GNU version of netcat that comes stock on many
-> unix based operating systems. The following command can be used with the
-> [NMap.org][NMap.org] version: `$ ncat -l -p 6142`
+> 上述命令用于 GNU 版的 netcat，该命令存在于许多<!--
+> -->基于 unix 的操作系统。而以下命令可用于
+> [NMap.org][NMap.org] 版的 netcat：`$ ncat -l -p 6142`
 
 在另一个终端运行我们的项目。
 
