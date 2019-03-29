@@ -29,6 +29,7 @@ let n = socket.read(&mut buf).unwrap();
 
 // 使用 &buf[..n];
 # }
+# fn main() {}
 ```
 
 当调用 `socket.read` 时，要么该套接字在其接收缓冲区有待读取的数据，
