@@ -12,8 +12,9 @@ menu:
 -->在于，这个程序在创建流或者<!--
 -->将“hello, world!”消息写入到流中的时候不会阻塞程序执行。
 
-在开始之前，你应该对 TCP 流的工作原理有最基本的了解。
-了解 Rust 的[标准库实现](https://doc.rust-lang.org/std/net/struct.TcpStream.html)<!--
+在开始之前，你应该对 TCP 流的工作原理有最基本的了解<!--
+-->。了解 Rust 的[标准库<!--
+-->实现](https://doc.rust-lang.org/std/net/struct.TcpStream.html)<!--
 -->也很有帮助。
 
 我们开始吧。
@@ -29,172 +30,89 @@ $ cd hello-world
 
 ```toml
 [dependencies]
-tokio = "0.1"
+tokio = { version = "0.2", features = ["full"] }
 ```
 
-还有 `main.rs` 中的 crate 与类型：
+Tokio requires specifying the requested components using feature flags. This
+allows the user to only include what is needed to run the application, resulting
+in smaller binaries. For getting started, we depend on `full`, which includes
+all components.
+
+Next, add the following to `main.rs`:
 
 ```rust
 # #![deny(deprecated)]
-extern crate tokio;
+# #![allow(unused_imports)]
 
 use tokio::io;
 use tokio::net::TcpStream;
 use tokio::prelude::*;
-# fn main() {}
+
+#[tokio::main]
+async fn main() {
+    // application comes here
+}
 ```
 
 这里我们使用 Tokio 自己的 [`io`] 与 [`net`] 模块。这俩模块提供与
 `std` 中相应模块几乎相同的网络与 I/O 操作的抽象，
-只有很小的差异：所有操作都是异步执行的。
+只有一点差异：所有操作都是异步执行的。
 
-# 创建流
+Next is the Tokio application entry point. This is an `async` main function
+annotated with `#[tokio::main]`. This is the function that first runs when the
+binary is executed. The `#[tokio::main]` annotation informs Tokio that this is
+where the runtime (all the infrastructure needed to power Tokio) is started.
+
+# Creating the TCP stream
 
 第一步是创建 `TcpStream`。我们使用 Tokio 提供的 `TcpStream`
 实现。
 
-```rust
+```rust,no_run
 # #![deny(deprecated)]
-# extern crate tokio;
 #
 # use tokio::net::TcpStream;
-fn main() {
-    // 解析我们即将交互的任何服务器的地址
-    let addr = "127.0.0.1:6142".parse().unwrap();
-    let client = TcpStream::connect(&addr);
+#[tokio::main]
+async fn main() {
+    // Connect to port 6142 on localhost
+    let stream = TcpStream::connect("127.0.0.1:6142").await.unwrap();
 
-    // 后续片段写到这里……
+    // Following snippets come here...
+# drop(stream);
 }
 ```
 
-接下来，我们会向 `client` `TcpStream` 中添加一些内容。这个异步任务现在创建了<!--
--->流，一旦创建完成就会产生（yield）之以进行后续处理。
+`TcpStream::connect` is an _asynchronous_ function. No work is done during the
+function call. Instead, `.await` is called to pause the current task until the
+connect has completed. Once the connect has completed, the task resumes. The
+`.await` call does **not** block the current thread.
 
-```rust
-# #![deny(deprecated)]
-# extern crate tokio;
-#
-# use tokio::net::TcpStream;
-# use tokio::prelude::*;
-# fn main() {
-# let addr = "127.0.0.1:6142".parse().unwrap();
-let client = TcpStream::connect(&addr).and_then(|stream| {
-    println!("created stream");
-
-    // 这里处理 stream。
-
-    Ok(())
-})
-.map_err(|err| {
-    // 所有任务必须具有 `()` 类型的 `Error`。这会强制进行
-    // 错误处理，并且有助于避免静默故障。
-    //
-    // 在本例中，只是将错误记录到 STDOUT（标准输出）。
-    println!("connection error = {:?}", err);
-});
-# }
-```
-
-调用 `TcpStream::connect` 会返回一个已创建的 TCP 流的 [`Future`]。
-我们会在指南的后续部分学习更多关于 [`Futures`] 的内容，不过现在你可以将
-[`Stream`] 作为表示将来终究会发生的事物的值<!--
--->（在本例中会创建流）。这意味着 `TcpStream::connect`  不会<!--
--->等待流创建后再返回。而是立即返回<!--
--->一个表示创建 TCP 流这项工作的值。当这项工作
-_实际_ 执行时，我们会在下文看到。
-
-上述 `and_then` 方法会在流创建后产生该流。`and_then` 是<!--
--->定义了如何处理异步作业的组合子函数的一个示例。
-
-每个组合子函数都获得必要状态的所有权以及用<!--
--->以执行的回调，并返回一个新的有附加“步骤”顺次排入的 `Future`<!--
--->。`Future` 是表示会在未来的某个时刻完成的<!--
--->某些计算的值。
-
-值得重申的是返回的那些 future 都是惰性的，也就是说，在调用该组合子时不执行任何操作<!--
--->。相反，一旦所有异步步骤都已顺次排入，
-最终的 `Future`（代表整个任务）就会“产生”（即运行）。这是<!--
--->之前定义的作业开始运行的时候。换句话说，到目前为止我们编写的代码<!--
--->实际上并没有创建 TCP 流。
-
-我们稍后会更深入地探讨这些 future（以及 stream 与 sink 的相关概念）<!--
--->。
-
-同样重要需要注意的是，我们已经在可以真正运行 future 之前调用了 `map_err` 将<!--
--->可以遇到的任何错误都转换成了 `()`。这确保我们已<!--
--->知悉错误的可能。
-
-接下来，我们会处理该流。
+Next, we do work with the TCP stream.
 
 # 写数据
 
 我们的目标是将 `"hello world\n"` 写入到流中。
 
-回到 `TcpStream::connect(addr).and_then` 块：
-
-```rust
+```rust,no_run
 # #![deny(deprecated)]
-# extern crate tokio;
 #
-# use tokio::io;
-# use tokio::prelude::*;
 # use tokio::net::TcpStream;
-# fn main() {
-# let addr = "127.0.0.1:6142".parse().unwrap();
-let client = TcpStream::connect(&addr).and_then(|stream| {
-    println!("created stream");
-
-    io::write_all(stream, "hello world\n").then(|result| {
-      println!("wrote to stream; success={:?}", result.is_ok());
-      Ok(())
-    })
-})
-# ;
-# }
-```
-
-[`io::write_all`] 函数取得 `stream` 的所有权，并返回一个
-[`Future`]，当整条消息都已写入到流时，该 future 就完成<--
--->了。`then` 用于排入一个写入完成后的步骤<!--
--->。在我们的示例中，我们只是向 `STDOUT` 写一条消息，以示<!--
--->写操作已完成。
-
-请注意 `result` 是包含原始流的 `Result` (（与
-`and_then` 相比，后者传递没有 `Result` 包装的流）。这让我们可以<!--
--->对同一流排入附加的读或写操作。当然，我们并<!--
--->没有任何要做的，所以只是丢弃了该流，这会自动关闭之。
-
-# 运行客户端任务
-
-到目前为止，我们有一个表示程序会完成的作业的 `Future`，但是我们<!--
--->并没有真正运行它。需要一种方式来“产生”该作业。我们需要一个执行子。
-
-执行子负责调度异步任务，使其<!--
--->完成。有很多执行子的实现可供选择，每个都有<!--
--->不同的优缺点。在本例中，我们会使用
-[Tokio 运行时][rt] 的默认执行子。
-
-```rust
-# #![deny(deprecated)]
-# extern crate tokio;
-# extern crate futures;
-#
 # use tokio::prelude::*;
-# use futures::future;
-# fn main() {
-# let client = future::ok(());
-println!("About to create the stream and write to it...");
-tokio::run(client);
-println!("Stream has been created and written to.");
+# #[tokio::main]
+# async fn main() {
+// Connect to port 6142 on localhost
+let mut stream = TcpStream::connect("127.0.0.1:6142").await.unwrap();
+
+stream.write_all(b"hello world\n").await.unwrap();
+
+println!("wrote to stream");
 # }
 ```
 
-`tokio::run` 会启动该运行时，阻塞当前进程直到所有已产生的任务<!--
--->都已完成并且所有资源（如文件与套接字）都已释放。
-
-至此，我们仅仅在执行子上执行了单个任务，因此 `client` 任务<!--
--->是阻塞 `run` 返回的唯一任务。 一旦 `run` 返回，就可以确定<!--
--->我们的 Future 已经运行完成。
+The [`write_all`] function is implemented for all "stream" like types. It is
+provided by the [`AsyncWriteExt`] trait. Again, the function is asynchronous, so
+no work is done unless `.await` is called. We call `.await` to perform the
+write.
 
 可以在[这里][full-code]找到完整的示例。
 
@@ -204,11 +122,11 @@ println!("Stream has been created and written to.");
 -->命令在先前指定的端口上启动 TCP 套接字监听。
 
 ```bash
-$ nc -l -p 6142
+$ nc -l 6142
 ```
 > 上述命令用于 GNU 版的 netcat，该命令存在于许多<!--
 > -->基于 unix 的操作系统。而以下命令可用于
-> [NMap.org][NMap.org] 版的 netcat：`$ ncat -l -p 6142`
+> [NMap.org][NMap.org] 版的 netcat：`$ ncat -l 6142`
 
 在另一个终端运行我们的项目。
 
@@ -223,12 +141,10 @@ $ cargo run
 我们这里只是对 Tokio 及其异步模型小试牛刀。本指南的下一页<!--
 -->会开始稍深入探讨 Future 与 Tokio 运行时模型。
 
-[`Future`]: {{< api-url "futures" >}}/future/trait.Future.html
-[`Futures`]: /docs/getting-started/futures/
-[rt]: {{< api-url "tokio" >}}/runtime/index.html
-[`io`]: {{< api-url "tokio" >}}/io/index.html
-[`net`]: {{< api-url "tokio" >}}/net/index.html
-[`io::write_all`]: {{< api-url "tokio-io" >}}/io/fn.write_all.html
-[full-code]: https://github.com/tokio-rs/tokio/tree/v0.1.x/tokio/examples/hello_world.rs
+[`io`]: https://docs.rs/tokio/0.2/tokio/io/index.html
+[`net`]: https://docs.rs/tokio/0.2/tokio/net/index.html
+[`write_all`]: https://docs.rs/tokio/0.2/tokio/io/trait.AsyncWriteExt.html#method.write_all
+[`AsyncWriteExt`]: https://docs.rs/tokio/0.2/tokio/io/trait.AsyncWriteExt.html
+[full-code]: https://github.com/tokio-rs/tokio/blob/master/examples/hello_world.rs
 [Netcat]: http://netcat.sourceforge.net/
 [Nmap.org]: https://nmap.org
