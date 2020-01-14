@@ -10,18 +10,6 @@ menu:
     - identifier: "getting_started"
       name: "入门"
       weight: 1000
-    - identifier: "futures"
-      name: "[0.1] 使用 future"
-      weight: 2000
-    - identifier: "io"
-      name: "[0.1] 使用 Tokio 的 I/O"
-      weight: 3000
-    - identifier: "going_deeper"
-      name: "[0.1] 深入"
-      weight: 7000
-    - identifier: "internals"
-      name: "[0.1] Tokio 内部原理"
-      weight: 8000
     - identifier: "reference"
       name: "API 文档"
       url: "https://docs.rs/tokio"

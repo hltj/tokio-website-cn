@@ -1,9 +1,6 @@
 ---
 title: "运行时模型"
 weight : 7030
-menu:
-  docs:
-    parent: going_deeper
 ---
 
 现在我们要介绍 Tokio / future 运行时模型。Tokio 建立在
