@@ -1,6 +1,7 @@
 ---
 title: "Tasks"
 weight : 7020
+draft: true
 ---
 
 Tasks are the application's "unit of logic". They are similar to [Go's
@@ -11,7 +12,7 @@ Given that a task runs an asynchronous bit of logic, they are represented by the
 [`Future`] trait. The task's future implementation completes with a `()` value
 once the task is done processing.
 
-Tasks are passed to [executors], which handle scheduling the task. An executor
+Tasks are passed to [executors], which handles scheduling the task. An executor
 usually is scheduling many tasks across a single or small set of threads.
 **Tasks must not perform computation heavy logic or they will prevent other
 tasks from executing**. So don't try to compute the fibonacci sequence as a
