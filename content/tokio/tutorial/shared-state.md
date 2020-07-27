@@ -89,14 +89,14 @@ async fn main() {
 ## On using `std::sync::Mutex`
 
 Note, `std::sync::Mutex` and **not** `tokio::sync::Mutex` is used to guard the
-`HashMap` a common error is to unconditionally use `tokio::sync::Mutex` from
+`HashMap`. A common error is to unconditionally use `tokio::sync::Mutex` from
 within async code. An async mutex is a mutex that is locked across calls to
 `.await`.
 
 A synchronous mutex will block the current thread when waiting to acquire the
-the lock. This, in turn, will block other tasks from processing. However,
-switching to `tokio::sync::Mutex` usually does not help as the asynchronous
-mutex uses a synchronous mutex internally.
+lock. This, in turn, will block other tasks from processing. However, switching
+to `tokio::sync::Mutex` usually does not help as the asynchronous mutex uses a
+synchronous mutex internally.
 
 As a rule of thumb, using a synchronous mutex from within asynchronous code is
 fine as long as contention remains low and the lock is not held across calls to
