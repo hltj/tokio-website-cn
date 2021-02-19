@@ -5,7 +5,7 @@ subtitle: "Introduction"
 
 This tutorial will take you step by step through the process of building a
 [Redis] client and server. We will start with the basics of asynchronous
-programing with Rust and build up from there. We will implement a subset of
+programming with Rust and build up from there. We will implement a subset of
 Redis commands but will get a comprehensive tour of Tokio.
 
 # Mini-Redis
@@ -74,7 +74,7 @@ Make sure that it was successfully installed by starting the server:
 $ mini-redis-server
 ```
 
-Then try to get the key `foo` using `mini-redis-cli`
+Then, in a separate terminal window, try to get the key `foo` using `mini-redis-cli`
 
 ```bash
 $ mini-redis-cli get foo

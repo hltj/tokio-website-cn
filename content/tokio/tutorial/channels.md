@@ -77,11 +77,11 @@ In this section, we will use [mpsc] and [oneshot]. The other types of message
 passing channels are explored in later sections. The full code from this section
 is found [here][full].
 
-[channels]: https://docs.rs/tokio/0.3/tokio/sync/index.html
-[mpsc]: https://docs.rs/tokio/0.3/tokio/sync/mpsc/index.html
-[oneshot]: https://docs.rs/tokio/0.3/tokio/sync/oneshot/index.html
-[broadcast]: https://docs.rs/tokio/0.3/tokio/sync/broadcast/index.html
-[watch]: https://docs.rs/tokio/0.3/tokio/sync/watch/index.html
+[channels]: https://docs.rs/tokio/1/tokio/sync/index.html
+[mpsc]: https://docs.rs/tokio/1/tokio/sync/mpsc/index.html
+[oneshot]: https://docs.rs/tokio/1/tokio/sync/oneshot/index.html
+[broadcast]: https://docs.rs/tokio/1/tokio/sync/broadcast/index.html
+[watch]: https://docs.rs/tokio/1/tokio/sync/watch/index.html
 [`async-channel`]: https://docs.rs/async-channel/
 [`std::sync::mpsc`]: https://doc.rust-lang.org/stable/std/sync/mpsc/index.html
 [`crossbeam::channel`]: https://docs.rs/crossbeam/latest/crossbeam/channel/index.html
@@ -118,7 +118,7 @@ use tokio::sync::mpsc;
 #[tokio::main]
 async fn main() {
     // Create a new channel with a capacity of at most 32.
-    let (mut tx, mut rx) = mpsc::channel(32);
+    let (tx, mut rx) = mpsc::channel(32);
 # tx.send(()).await.unwrap();
 
     // ... Rest comes here
@@ -142,8 +142,8 @@ use tokio::sync::mpsc;
 
 #[tokio::main]
 async fn main() {
-    let (mut tx, mut rx) = mpsc::channel(32);
-    let mut tx2 = tx.clone();
+    let (tx, mut rx) = mpsc::channel(32);
+    let tx2 = tx.clone();
 
     tokio::spawn(async move {
         tx.send("sending from first handle").await;
@@ -220,7 +220,7 @@ them directly on the Redis connection.
 # let (mut tx, _) = tokio::sync::mpsc::channel(10);
 // The `Sender` handles are moved into the tasks. As there are two
 // tasks, we need a second `Sender`.
-let mut tx2 = tx.clone();
+let tx2 = tx.clone();
 
 // Spawn two tasks, one gets a key, the other sets a key
 let t1 = tokio::spawn(async move {

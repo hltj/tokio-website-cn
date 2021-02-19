@@ -504,7 +504,7 @@ futures = "0.3"
 Then implement [`futures::task::ArcWake`][`ArcWake`].
 
 ```rust
-use futures::task::ArcWake;
+use futures::task::{self, ArcWake};
 use std::sync::Arc;
 # struct Task {}
 # impl Task {
@@ -808,4 +808,4 @@ async fn delay(dur: Duration) {
 [vtable]: https://doc.rust-lang.org/std/task/struct.RawWakerVTable.html
 [`ArcWake`]: https://docs.rs/futures/0.3/futures/task/trait.ArcWake.html
 [`futures`]: https://docs.rs/futures/
-[notify]: https://docs.rs/tokio/0.3/tokio/sync/struct.Notify.html
+[notify]: https://docs.rs/tokio/1/tokio/sync/struct.Notify.html

@@ -8,8 +8,8 @@ First, move the client `SET`/`GET` code from the previous section to an example
 file. This way, we can run it against our server.
 
 ```bash
-mkdir -p examples
-mv src/main.rs examples/hello-redis.rs
+$ mkdir -p examples
+$ mv src/main.rs examples/hello-redis.rs
 ```
 
 Then create a new, empty `src/main.rs` and continue.
@@ -86,7 +86,7 @@ In the server terminal, the output is:
 GOT: Array([Bulk(b"set"), Bulk(b"hello"), Bulk(b"world")])
 ```
 
-[tcpl]: https://docs.rs/tokio/0.3/tokio/net/struct.TcpListener.html
+[tcpl]: https://docs.rs/tokio/1/tokio/net/struct.TcpListener.html
 
 # Concurrency
 
@@ -383,12 +383,16 @@ async fn process(socket: TcpStream) {
     while let Some(frame) = connection.read_frame().await.unwrap() {
         let response = match Command::from_frame(frame).unwrap() {
             Set(cmd) => {
-                db.insert(cmd.key().to_string(), cmd.value().clone());
+                // The value is stored as `Vec<u8>`
+                db.insert(cmd.key().to_string(), cmd.value().to_vec());
                 Frame::Simple("OK".to_string())
             }
             Get(cmd) => {
                 if let Some(value) = db.get(cmd.key()) {
-                    Frame::Bulk(value.clone())
+                    // `Frame::Bulk` expects data to be of type `Bytes`. This
+                    // type will be covered later in the tutorial. For now,
+                    // `&Vec<u8>` is converted to `Bytes` using `into()`.
+                    Frame::Bulk(value.clone().into())
                 } else {
                     Frame::Null
                 }
@@ -417,7 +421,7 @@ $ cargo run --example hello-redis
 Now, the output will be:
 
 ```text
-got value from the server; success=Some(b"world")
+got value from the server; result=Some(b"world")
 ```
 
 We can now get and set values, but there is a problem: The values are not
